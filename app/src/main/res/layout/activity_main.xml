@@ -1,0 +1,643 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Gautham"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:padding="5dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="The Chess Champion"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="15sp"/>
+
+    <LinearLayout
+        android:id="@+id/llBoard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <GridLayout
+            android:id="@+id/h"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/a8"
+                android:src="@drawable/wr"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@color/green"
+                />
+
+            <ImageView
+                android:id="@+id/b8"
+                android:src="@drawable/wn"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+            <ImageView
+                android:id="@+id/c8"
+                android:background="@color/green"
+                android:src="@drawable/wb"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+            <ImageView
+                android:id="@+id/d8"
+                android:src="@drawable/wk"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+            <ImageView
+                android:id="@+id/e8"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/wq"
+                android:background="@color/green"
+                />
+
+            <ImageView
+                android:id="@+id/f8"
+                android:src="@drawable/wb"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+            <ImageView
+                android:id="@+id/g8"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/wn"
+                android:background="@color/green"
+                />
+
+            <ImageView
+                android:id="@+id/h8"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/wr"
+                />
+
+        </GridLayout>
+
+        <GridLayout
+            android:id="@+id/g"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/a7"
+                android:src="@drawable/wp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+            <ImageView
+                android:id="@+id/b7"
+                android:src="@drawable/wp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@color/green"
+                />
+
+            <ImageView
+                android:id="@+id/c7"
+                android:src="@drawable/wp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+            <ImageView
+                android:id="@+id/d7"
+                android:src="@drawable/wp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@color/green"
+                />
+
+            <ImageView
+                android:id="@+id/e7"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/wp"
+                />
+
+            <ImageView
+                android:id="@+id/f7"
+                android:src="@drawable/wp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@color/green"
+                />
+
+            <ImageView
+                android:id="@+id/g7"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/wp"
+                />
+
+            <ImageView
+                android:id="@+id/h7"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@color/green"
+                android:src="@drawable/wp"
+                />
+
+        </GridLayout>
+
+        <GridLayout
+            android:id="@+id/f"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/a6"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@color/green"
+                />
+
+            <ImageView
+                android:id="@+id/b6"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+            <ImageView
+                android:id="@+id/c6"
+                android:background="@color/green"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+            <ImageView
+                android:id="@+id/d6"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+            <ImageView
+                android:id="@+id/e6"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@color/green"
+                />
+
+            <ImageView
+                android:id="@+id/f6"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+            <ImageView
+                android:id="@+id/g6"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@color/green"
+                />
+
+            <ImageView
+                android:id="@+id/h6"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+        </GridLayout>
+
+        <GridLayout
+            android:id="@+id/e"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/a5"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+            <ImageView
+                android:id="@+id/b5"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@color/green"
+                />
+
+            <ImageView
+                android:id="@+id/c5"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+            <ImageView
+                android:id="@+id/d5"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@color/green"
+                />
+
+            <ImageView
+                android:id="@+id/e5"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+            <ImageView
+                android:id="@+id/f5"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@color/green"
+                />
+
+            <ImageView
+                android:id="@+id/g5"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+            <ImageView
+                android:id="@+id/h5"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@color/green"
+                />
+
+        </GridLayout>
+
+        <GridLayout
+            android:id="@+id/d"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/a4"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@color/green"
+                />
+
+            <ImageView
+                android:id="@+id/b4"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+            <ImageView
+                android:id="@+id/c4"
+                android:background="@color/green"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+            <ImageView
+                android:id="@+id/d4"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+            <ImageView
+                android:id="@+id/e4"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@color/green"
+                />
+
+            <ImageView
+                android:id="@+id/f4"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+            <ImageView
+                android:id="@+id/g4"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@color/green"
+                />
+
+            <ImageView
+                android:id="@+id/h4"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+        </GridLayout>
+
+        <GridLayout
+            android:id="@+id/c"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/a3"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+            <ImageView
+                android:id="@+id/b3"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@color/green"
+                />
+
+            <ImageView
+                android:id="@+id/c3"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+            <ImageView
+                android:id="@+id/d3"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@color/green"
+                />
+
+            <ImageView
+                android:id="@+id/e3"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+            <ImageView
+                android:id="@+id/f3"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@color/green"
+                />
+
+            <ImageView
+                android:id="@+id/g3"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+            />
+
+            <ImageView
+                android:id="@+id/h3"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@color/green"
+                />
+
+        </GridLayout>
+
+        <GridLayout
+            android:id="@+id/b"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/a2"
+                android:src="@drawable/bp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@color/green"
+                />
+
+            <ImageView
+                android:id="@+id/b2"
+                android:src="@drawable/bp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+            <ImageView
+                android:id="@+id/c2"
+                android:background="@color/green"
+                android:src="@drawable/bp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+            <ImageView
+                android:id="@+id/d2"
+                android:src="@drawable/bp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+            <ImageView
+                android:id="@+id/e2"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/bp"
+                android:background="@color/green"
+                />
+
+            <ImageView
+                android:id="@+id/f2"
+                android:src="@drawable/bp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                />
+
+            <ImageView
+                android:id="@+id/g2"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/bp"
+                android:background="@color/green"
+                />
+
+            <ImageView
+                android:id="@+id/h2"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/bp"
+                />
+
+        </GridLayout>
+
+        <GridLayout
+            android:id="@+id/a"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/a1"
+                android:src="@drawable/br"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+            />
+
+            <ImageView
+                android:id="@+id/b1"
+                android:src="@drawable/bn"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@color/green"
+            />
+
+            <ImageView
+                android:id="@+id/c1"
+                android:src="@drawable/bb"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+            />
+
+            <ImageView
+                android:id="@+id/d1"
+                android:src="@drawable/bk"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@color/green"
+            />
+
+            <ImageView
+                android:id="@+id/e1"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/bq"
+            />
+
+            <ImageView
+                android:id="@+id/f1"
+                android:src="@drawable/bb"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@color/green"
+            />
+
+            <ImageView
+                android:id="@+id/g1"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/bn"
+            />
+
+            <ImageView
+                android:id="@+id/h1"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@color/green"
+                android:src="@drawable/br"
+            />
+
+        </GridLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/btnSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Escape"
+        android:layout_gravity="center"
+        android:padding="10dp"
+        android:textStyle="bold"
+        android:background="@color/greenHighlight"
+        android:textColor="@color/white"
+        android:layout_marginTop="10dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Manual Movement"
+        android:textColor="@color/greenHighlight"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/square_border"/>
+
+    <TextView
+        android:id="@+id/btnUp"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:text="Up"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:padding="10dp"
+        android:textStyle="bold"
+        android:background="@color/greenHighlight"
+        android:textColor="@color/white"
+        android:layout_marginTop="10dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/btnLeft"
+            android:layout_width="70dp"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:text="Left"
+            android:layout_gravity="center"
+            android:padding="10dp"
+            android:textStyle="bold"
+            android:background="@color/greenHighlight"
+            android:textColor="@color/white"
+            android:layout_marginRight="50dp"/>
+
+        <TextView
+            android:id="@+id/btnSend"
+            android:layout_width="70dp"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:text="Send"
+            android:layout_gravity="center"
+            android:padding="10dp"
+            android:textStyle="bold"
+            android:background="@color/green"
+            android:textColor="@color/white"/>
+
+        <TextView
+            android:id="@+id/btnRight"
+            android:layout_width="70dp"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:text="Right"
+            android:layout_gravity="center"
+            android:padding="10dp"
+            android:textStyle="bold"
+            android:background="@color/greenHighlight"
+            android:textColor="@color/white"
+            android:layout_marginLeft="50dp"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/btnDown"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:text="Down"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:padding="10dp"
+        android:textStyle="bold"
+        android:background="@color/greenHighlight"
+        android:textColor="@color/white"
+        android:layout_marginTop="10dp"/>
+
+</LinearLayout>
