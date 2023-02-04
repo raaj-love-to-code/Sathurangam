@@ -610,7 +610,7 @@
             android:padding="10dp"
             android:textStyle="bold"
             android:background="@color/green"
-            android:textColor="@color/white"/>
+            android:textColor="@color/black"/>
 
         <TextView
             android:id="@+id/btnRight"

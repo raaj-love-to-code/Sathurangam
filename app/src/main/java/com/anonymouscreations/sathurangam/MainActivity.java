@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.anonymouscreations.sathurangam.support.Mapping;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,10 +31,12 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout llBoard;
     GridLayout gl;
     TextView btnSwitch, btnLeft, btnRight, btnUp, btnDown, btnSend;
+    Drawable coins[];
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Automated Chess board");
+
+    Mapping mapping;
     int curPos = -1, row = 8, col = 8, manualControl[] = new int[4];
     long hold;
-    Drawable coins[];
     String fdn = "rnbkqbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBKQBNR w", coinMap = "prnbkqPRNBKQ", controlString = "0";
     char user = 'w';
 
@@ -43,15 +46,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // --- Mapping xml elements to java objects
         btnSwitch = findViewById(R.id.btnSwitch);
         btnLeft = findViewById(R.id.btnLeft);
         btnRight = findViewById(R.id.btnRight);
         btnUp = findViewById(R.id.btnUp);
         btnDown = findViewById(R.id.btnDown);
         btnSend = findViewById(R.id.btnSend);
+        llBoard = findViewById(R.id.llBoard);
 
-        mapPosition();
-        mapCoins();
+        // --- Instantiating user defined classes
+        mapping = new Mapping();
+
+
+        a = mapping.mapPosition(llBoard);
+        coins = mapping.mapCoins();
+
         arrange();
         reset();
         clickCoin();
@@ -324,23 +334,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void controls(){
-//        btnUp.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View view, MotionEvent motionEvent) {
-//                if(motionEvent.getAction()==MotionEvent.ACTION_UP) {
-//                    long sec = (System.currentTimeMillis()-hold);
-//                    Toast.makeText(MainActivity.this, String.valueOf(sec), Toast.LENGTH_SHORT).show();
-//                    return true;
-//                }
-//                else if(motionEvent.getAction()==MotionEvent.ACTION_DOWN) {
-//                    hold = System.currentTimeMillis();
-////                    Toast.makeText(MainActivity.this, "Started click", Toast.LENGTH_SHORT).show();
-//                    return true;
-//                }
-//                return false;
-//            }
-//        });
-
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -399,11 +392,11 @@ public class MainActivity extends AppCompatActivity {
         if(manualControl[0]!=0)
             controlString+=("u"+manualControl[0]);
         if(manualControl[1]!=0)
-            controlString+=("-r"+manualControl[1]);
+            controlString+=("r"+manualControl[1]);
         if(manualControl[2]!=0)
-            controlString+=("-d"+manualControl[2]);
+            controlString+=("d"+manualControl[2]);
         if(manualControl[3]!=0)
-            controlString+=("-l"+manualControl[3]);
+            controlString+=("l"+manualControl[3]);
 
         btnSend.setText(controlString);
     }
