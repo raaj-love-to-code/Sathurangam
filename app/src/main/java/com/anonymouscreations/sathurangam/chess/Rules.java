@@ -1,6 +1,4 @@
-package com.anonymouscreations.sathurangam.support;
-
-import android.util.Log;
+package com.anonymouscreations.sathurangam.chess;
 
 import java.util.ArrayList;
 
@@ -30,8 +28,10 @@ public class Rules {
 
         if(Character.toLowerCase(currentCoin) == 'p')
             pawn();
-        if(Character.toLowerCase(currentCoin) == 'n')
+        else if(Character.toLowerCase(currentCoin) == 'n')
             knight();
+        else if(Character.toLowerCase(currentCoin) == 'b')
+            bishop();
 
         validate();
         return pos;
@@ -105,4 +105,45 @@ public class Rules {
             }
         }
     }
+
+    // === Rules for Bishop
+    void bishop(){
+
+        // --- Right down diagonal
+        for(int i=1;i<8;i++){
+            if(x+i < 8 && y+i < 8) {
+                pos.add(((x + i) * 10) + y + i);
+                if (row[x + i][y + i] != '1')
+                    break;
+            }
+        }
+
+        // --- Left up diagonal
+        for(int i=1;i<8;i++){
+            if(x-i >= 0 && y-i >= 0) {
+                pos.add(((x - i) * 10) + y - i);
+                if (row[x - i][y - i] != '1')
+                    break;
+            }
+        }
+
+        // --- Right up diagonal
+        for(int i=1;i<8;i++){
+            if(x-i >= 0 && y+i < 8) {
+                pos.add(((x - i) * 10) + y + i);
+                if (row[x - i][y + i] != '1')
+                    break;
+            }
+        }
+
+        // --- Left down up diagonal
+        for(int i=1;i<8;i++){
+            if(x+i < 8 && y-i >= 0) {
+                pos.add(((x + i) * 10) + y - i);
+                if (row[x + i][y - i] != '1')
+                    break;
+            }
+        }
+    }
+
 }

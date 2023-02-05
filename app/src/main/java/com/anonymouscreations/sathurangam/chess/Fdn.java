@@ -1,4 +1,4 @@
-package com.anonymouscreations.sathurangam.support;
+package com.anonymouscreations.sathurangam.chess;
 
 public class Fdn {
 
@@ -60,6 +60,10 @@ public class Fdn {
             s+=i==7 ? ' ' : '/';
         }
         fdn = s+fdn.split(" ")[1];
+    }
+
+    public void switchSide(){
+        // *** Switch side while playing *** //
     }
 
 }

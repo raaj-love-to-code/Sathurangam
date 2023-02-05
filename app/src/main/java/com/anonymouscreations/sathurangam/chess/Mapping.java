@@ -1,20 +1,19 @@
-package com.anonymouscreations.sathurangam.support;
+package com.anonymouscreations.sathurangam.chess;
 
-import android.app.Application;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.anonymouscreations.sathurangam.R;
+
+import java.util.ArrayList;
 
 public class Mapping {
 
-    ImageView[][] a;
-    Drawable[] coins;
+    public ImageView[][] a;
+    public Drawable[] coins;
     Context context;
     public String coinMap;
     int row, col;
@@ -83,6 +82,48 @@ public class Mapping {
                 else
                     a[i][j].setImageDrawable(coins[coinMap.indexOf(String.valueOf(row[i][j]))]);
             }
+        }
+    }
+
+    // === Resetting the focus
+    public void reset(){
+        for(int i=0;i<8;i++){
+            for(int j=0;j<8;j++){
+                a[i][j].setBackgroundColor(context.getResources().getColor((i+j)%2==0 ? R.color.green : R.color.white));
+            }
+        }
+    }
+
+    // === Highlighting the possible path for the selected coin
+    public void possiblePath(ArrayList<Integer> pos, Fdn fdn){
+
+        // --- Looping through each possible path and highlighting the background
+        for(int i=0;i<pos.size();i++){
+            int x = pos.get(i)/10, y = pos.get(i)%10;
+            a[x][y].setBackground(context.getResources().getDrawable((x + y) % 2 == 0 ? R.drawable.possible_move_green : R.drawable.possible_move));
+        }
+        captureAlert(pos, fdn);
+    }
+
+    // === Highlighting the opponent coins in the possible path
+    public void captureAlert(ArrayList<Integer> pos, Fdn fdn){
+
+        char row[][] = fdn.briefFDN();
+
+        // --- Looping through each possible paths
+        for(int i=0;i<pos.size();i++){
+
+            // --- Identifying the coin in the path
+            char temp = row[pos.get(i)/10][pos.get(i)%10];
+
+            // --- Extracting the coordinates
+            int x = pos.get(i)/10, y = pos.get(i)%10;
+
+            // --- Highlighting the opponent coin
+            if(fdn.getFdn().split(" ")[1].equals("b") && Character.isUpperCase(temp))
+                a[x][y].setBackground(context.getResources().getDrawable((x + y) % 2 == 0 ? R.drawable.captured_square_green : R.drawable.captured_square));
+            else if(fdn.getFdn().split(" ")[1].equals("w") && Character.isLowerCase(temp))
+                a[x][y].setBackground(context.getResources().getDrawable((x + y) % 2 == 0 ? R.drawable.captured_square_green : R.drawable.captured_square));
         }
     }
 }

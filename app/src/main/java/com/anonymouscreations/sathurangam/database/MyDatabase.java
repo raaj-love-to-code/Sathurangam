@@ -5,6 +5,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.anonymouscreations.sathurangam.activities.MainActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
@@ -28,12 +29,12 @@ public class MyDatabase {
         databaseReference.child("control").setValue(controlString).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
-                Toast.makeText(context,"Data updated successfully "+controlString,Toast.LENGTH_SHORT);
+                Toast.makeText(context,"Data updated successfully "+controlString,Toast.LENGTH_SHORT).show();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Toast.makeText(context,"Something went wrong while updating control value\nTry again!",Toast.LENGTH_LONG);
+                Toast.makeText(context,"Something went wrong while updating control value\nTry again!",Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -45,12 +46,12 @@ public class MyDatabase {
         databaseReference.child("coin_position").setValue(fdn).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
-                Toast.makeText(context,"Updated FDN successfully\n"+fdn,Toast.LENGTH_SHORT);
+                Toast.makeText(context.getApplicationContext(),"Updated FDN successfully\n"+fdn,Toast.LENGTH_SHORT).show();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Toast.makeText(context,"Something went wrong while updating FDN value\nTry again",Toast.LENGTH_LONG);
+                Toast.makeText(context,"Something went wrong while updating FDN value\nTry again",Toast.LENGTH_SHORT).show();
             }
         });
     }
