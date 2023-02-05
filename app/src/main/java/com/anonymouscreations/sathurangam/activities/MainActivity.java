@@ -1,4 +1,4 @@
-package com.anonymouscreations.sathurangam;
+package com.anonymouscreations.sathurangam.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,7 +15,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.anonymouscreations.sathurangam.R;
+import com.anonymouscreations.sathurangam.database.MyDatabase;
+import com.anonymouscreations.sathurangam.support.Fdn;
 import com.anonymouscreations.sathurangam.support.Mapping;
+import com.anonymouscreations.sathurangam.support.Rules;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,15 +35,15 @@ import java.util.Arrays;
 public class MainActivity extends AppCompatActivity {
     ImageView a[][];
     LinearLayout llBoard;
-    GridLayout gl;
     TextView btnSwitch, btnLeft, btnRight, btnUp, btnDown, btnSend;
     Drawable coins[];
-    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Automated Chess board");
-
     Mapping mapping;
+    Fdn fdn;
+    Rules rules;
+    MyDatabase myDatabase;
     int curPos = -1, row = 8, col = 8, manualControl[] = new int[4];
     long hold;
-    String fdn = "rnbkqbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBKQBNR w", coinMap = "prnbkqPRNBKQ", controlString = "0";
+    String coinMap, controlString = "0";
     char user = 'w';
 
 
@@ -55,18 +61,21 @@ public class MainActivity extends AppCompatActivity {
         btnSend = findViewById(R.id.btnSend);
         llBoard = findViewById(R.id.llBoard);
 
-        // --- Instantiating user defined classes
-        mapping = new Mapping();
+        // --- Instantiating user defined classes with context as the constructor parameter
+        mapping = new Mapping(getApplicationContext());
+        fdn = new Fdn("rnbkqbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBKQBNR w");
+        myDatabase = new MyDatabase(getApplicationContext(),"Automated Chess board");
+        rules = new Rules();
 
-
+        coinMap = mapping.coinMap;
         a = mapping.mapPosition(llBoard);
         coins = mapping.mapCoins();
 
-        arrange();
+        mapping.arrange(fdn);
+        myDatabase.updateFdnString(fdn.getFdn());
         reset();
         clickCoin();
         controls();
-        updateFirebaseFdn();
 
         btnSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,81 +99,32 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    void arrange(){
-        System.out.println(fdn);
-        char row[][] = briefFDN();
-        for(int i=0;i<this.row;i++){
-            for(int j=0;j<col;j++){
-                if(row[i][j]=='1')
-                    a[i][j].setImageResource(0);
-                else
-                    a[i][j].setImageDrawable(coins[coinMap.indexOf(String.valueOf(row[i][j]))]);
-            }
-        }
-    }
-
-    char[][] briefFDN(){
-        String[] out = fdn.split(" ")[0].split("/");
-        char[][] o1 = new char[8][8];
-        for(int i=0;i<8;i++) {
-            int x = 0;
-            for (int j = 0; j < out[i].length(); j++) {
-                if (Character.isDigit(out[i].charAt(j))) {
-                    int temp = Integer.parseInt(String.valueOf(out[i].charAt(j)));
-                    for (int k = 0; k < temp; k++)
-                        o1[i][x++] = '1';
-                } else
-                    o1[i][x++] = out[i].charAt(j);
-            }
-        }
-        return o1;
-    }
-
-    void mergeFDN(char[][] r){
-        String s = "";
-        for(int i=0;i<8;i++){
-            int x = 0;
-            for(int j=0;j<8;j++) {
-                if(r[i][j]!='1'&&x>0) {
-                    s += String.valueOf(x);
-                    x = 0;
-                }
-                if(i>1&&i<6&&r[i][j]=='1') {
-                    x++;
-                    if(j==7)
-                        s+=String.valueOf(x);
-                }else
-                    s += r[i][j];
-            }
-            s+=i==7 ? ' ' : '/';
-        }
-        fdn = s+fdn.split(" ")[1];
-    }
-
     String currentCoin(int t){
-        char row[][] = briefFDN();
+        char row[][] = fdn.briefFDN();
         char coin = row[t/10][t%10];
-        if(coinMap.contains(String.valueOf(coin))&&((Character.isUpperCase(coin)&&fdn.split(" ")[1].equals("w"))||(Character.isLowerCase(coin)&&fdn.split(" ")[1].equals("b"))))
+        if(coinMap.contains(String.valueOf(coin)) &&
+            ((Character.isUpperCase(coin) && fdn.getFdn().split(" ")[1].equals("w")) ||
+            (Character.isLowerCase(coin) && fdn.getFdn().split(" ")[1].equals("b"))))
             return String.valueOf(coin);
         return "1";
     }
 
     void moveCoin(int p) {
 
-        char[][] row = briefFDN();
+        char[][] row = fdn.briefFDN();
         reset();
         row[p/10][p%10] = row[curPos/10][curPos%10];
         row[curPos/10][curPos%10] = '1';
-        if(fdn.split(" ")[1].equals("b"))
-            fdn = fdn.split(" ")[0]+" "+"w";
+        if(fdn.getFdn().split(" ")[1].equals("b"))
+            fdn.setFdn(fdn.getFdn().split(" ")[0]+" "+"w");
         else
-            fdn = fdn.split(" ")[0]+" "+"b";
-        mergeFDN(row);
-        arrange();
+            fdn.setFdn(fdn.getFdn().split(" ")[0]+" "+"b");
+        fdn.mergeFDN(row);
+        mapping.arrange(fdn);
         a[curPos/10][curPos%10].setBackground(getResources().getDrawable(((curPos/10)+(curPos%10))%2==0 ? R.drawable.square_border_green : R.drawable.square_border));
         a[p/10][p%10].setBackground(getResources().getDrawable(((p/10)+(p%10))%2==0 ? R.drawable.square_border_green : R.drawable.square_border));
         curPos = -1;
-        updateFirebaseFdn();
+        myDatabase.updateFdnString(fdn.getFdn());
     }
 
     boolean checkPosition(int t){
@@ -184,42 +144,21 @@ public class MainActivity extends AppCompatActivity {
                         String curCoin = currentCoin(tempI);
                         if(!checkPosition(tempI)&&curPos==-1) {
                             return;
-                        }else if(curPos==-1||curPos==tempI||Character.isLowerCase(curCoin.charAt(0))&&fdn.split(" ")[1].equals("b")||Character.isUpperCase(curCoin.charAt(0))&&fdn.split(" ")[1].equals("w")) {
+                        }else if(curPos == -1 ||
+                                curPos == tempI ||
+                                Character.isLowerCase(curCoin.charAt(0)) &&
+                                        fdn.getFdn().split(" ")[1].equals("b") ||
+                                Character.isUpperCase(curCoin.charAt(0)) &&
+                                        fdn.getFdn().split(" ")[1].equals("w")) {
                             reset();
                             curPos = tempI;
-                            possiblePath(rules(currentCoin(tempI).charAt(0)));
+                            possiblePath(rules.check(fdn,currentCoin(tempI).charAt(0),curPos));
                             temp.setBackgroundColor(getResources().getColor((tempI % 10 + tempI / 10) % 2 == 0 ? R.color.greenHigh : R.color.grey));
                         }else if(validMove(tempI))
                             moveCoin(tempI);
                     }
                 });
             }
-        }
-    }
-
-    void mapCoins(){
-        coins = new Drawable[12];
-        coins[0] = getResources().getDrawable(R.drawable.bp);
-        coins[1] = getResources().getDrawable(R.drawable.br);
-        coins[2] = getResources().getDrawable(R.drawable.bn);
-        coins[3] = getResources().getDrawable(R.drawable.bb);
-        coins[4] = getResources().getDrawable(R.drawable.bk);
-        coins[5] = getResources().getDrawable(R.drawable.bq);
-        coins[6] = getResources().getDrawable(R.drawable.wp);
-        coins[7] = getResources().getDrawable(R.drawable.wr);
-        coins[8] = getResources().getDrawable(R.drawable.wn);
-        coins[9] = getResources().getDrawable(R.drawable.wb);
-        coins[10] = getResources().getDrawable(R.drawable.wk);
-        coins[11] = getResources().getDrawable(R.drawable.wq);
-    }
-
-    void mapPosition(){
-        a = new ImageView[8][8];
-        llBoard = findViewById(R.id.llBoard);
-        for(int i=0;i<row;i++){
-            gl = (GridLayout)llBoard.getChildAt(i);
-            for(int j=0;j<col;j++)
-                a[i][j] = (ImageView)gl.getChildAt(j);
         }
     }
 
@@ -231,77 +170,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    ArrayList<Integer> rules(char uc){
-        int x = curPos/10, y = curPos%10;
-        char c = Character.toLowerCase(uc);
-        ArrayList<Integer> pos = new ArrayList<Integer>();
-        char[][] row = briefFDN();
-
-        // ======== Pawn ==================== //
-
-        if(c=='p'){
-
-            //  --- Check for pawn in last position
-            if((Character.isUpperCase(uc) && x==0) || (Character.isLowerCase(uc) && x==7))
-                return pos;
-
-            //  --- Determining the direction for movement
-            int s = 1;
-            if(Character.isUpperCase(uc))
-                s = -1;
-
-            //  --- Position for one step move
-            if(row[(x + (1*s))][y]=='1')
-                pos.add(((x + (1*s)) * 10) + y);
-
-            //  --- Position for second step move
-            if (pos.size() > 0 && ((x == 6 && Character.isUpperCase(uc)) || (x == 1 && Character.isLowerCase(uc))))
-                pos.add(((x + (2*s)) * 10) + y);
-
-            //  --- Side position for capturing coin
-            int a = x+(1*s);
-            if(y+1<=7 && row[a][y+1]!='1' && ( Character.isUpperCase(uc)  && (Character.isLowerCase(row[a][y+1])) || (Character.isLowerCase(uc)  && Character.isUpperCase(row[x+(1*s)][y+1])))){
-                pos.add((a * 10) + y + 1);
-            }
-            if(y-1>=0 && row[a][y-1]!='1' && ( Character.isUpperCase(uc) && (Character.isLowerCase(row[a][y-1])) || (Character.isLowerCase(uc)  && Character.isUpperCase(row[x+(1*s)][y-1])))){
-                pos.add((a * 10) + y - 1);
-            }
-        }
-
-        // ======== knight ==================== //
-
-        else if(c=='n'){
-            int temp[] = new int[]{1,-1,2,-2};
-            for(int i=0;i<4;i++){
-                for(int j=0;j<4;j++){
-                    if(temp[i]==temp[j]||-temp[i]==temp[j])
-                        continue;
-                    if(x+temp[i]<8&&y+temp[j]<8&&x+temp[i]>-1&&y+temp[j]>-1)
-                        pos.add(((x+temp[i])*10)+y+temp[j]);
-                }
-            }
-        }
-
-        // ================== bishop ===================== //
-
-        else if(c=='b'){
-//        ========================= Type here ======================= //
-        }
-
-        // ========== verifying the same side coins ============= //
-
-        System.out.println("s"+pos);
-        for(int i=0;i<pos.size();i++){
-            char temp = row[pos.get(i)/10][pos.get(i)%10];
-            if(fdn.split(" ")[1].equals("w")&&Character.isUpperCase(temp)) {
-                pos.remove(i--);
-            }
-            else if(fdn.split(" ")[1].equals("b")&&Character.isLowerCase(temp))
-                pos.remove(i--);
-        }
-        return pos;
-    }
-
     void possiblePath(ArrayList<Integer> pos){
         for(int i=0;i<pos.size();i++){
             int x = pos.get(i)/10, y = pos.get(i)%10;
@@ -311,20 +179,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void captureAlert(ArrayList<Integer> pos){
-        char row[][] = briefFDN();
+        char row[][] = fdn.briefFDN();
         for(int i=0;i<pos.size();i++){
             char temp = row[pos.get(i)/10][pos.get(i)%10];
             int x = pos.get(i)/10, y = pos.get(i)%10;
-            if(fdn.split(" ")[1].equals("b")&&Character.isUpperCase(temp)) {
+            if(fdn.getFdn().split(" ")[1].equals("b")&&Character.isUpperCase(temp)) {
                 a[x][y].setBackground(getResources().getDrawable((x + y) % 2 == 0 ? R.drawable.captured_square_green : R.drawable.captured_square));
             }
-            else if(fdn.split(" ")[1].equals("w")&&Character.isLowerCase(temp))
+            else if(fdn.getFdn().split(" ")[1].equals("w")&&Character.isLowerCase(temp))
                 a[x][y].setBackground(getResources().getDrawable((x + y) % 2 == 0 ? R.drawable.captured_square_green : R.drawable.captured_square));
         }
     }
 
     boolean validMove(int temp){
-        ArrayList<Integer> rul = rules(currentCoin(curPos).charAt(0));
+        ArrayList<Integer> rul = rules.check(fdn,currentCoin(curPos).charAt(0),curPos);
         String com = "";
         for(int i=0;i< rul.size();i++)
             com+=rul.get(i)+"_";
@@ -333,11 +201,12 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
+    // === Manual control button handling
     void controls(){
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                updateControl();
+                myDatabase.updateControlString(controlString);
             }
         });
 
@@ -367,15 +236,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    void updateControl(){
-        Toast.makeText(this, controlString, Toast.LENGTH_SHORT).show();
-        databaseReference.child("control").setValue(controlString);
-    }
-
-    void updateFirebaseFdn(){
-        databaseReference.child("coin_position").setValue(fdn);
-    }
-
+    // === Manual Control value processing
     void addControl(char z){
 
         controlString = "";
