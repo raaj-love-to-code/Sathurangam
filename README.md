@@ -1,9 +1,11 @@
 # Sathurangam -an ancient Indian strategy game
 
-- This is online chess game
+- This is online chess game, but not like all other online games
 
-- This android application is a part of Smart chess board project
+- It is the combination of traditional and technology
 
-- Each movement of the coin in the real physical chess board will be updated here and vice-versa
+- This android application is a part of smart chess board project
+
+- Each movement of the coin in the real physical chess board will be updated in the application and vice-versa
 
 > Project in progress ...
