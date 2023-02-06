@@ -2,6 +2,8 @@ package com.anonymouscreations.sathurangam.chess;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
+import android.util.Log;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -75,8 +77,18 @@ public class Mapping {
     public void arrange(Fdn fdn){
         System.out.println(fdn.getFdn());
         char row[][] = fdn.briefFDN();
+
         for(int i=0;i<this.row;i++){
             for(int j=0;j<col;j++){
+
+                // --- Check for king CHECK
+                int king = King.checkForKing(new Rules().check(fdn,row[i][j],(i*10)+j,false), row, row[i][j]);
+                if(king != -1) {
+                    a[king / 10][king % 10].setBackground(context.getResources().getDrawable((i + j) % 2 == 0 ? R.drawable.check_alert_green : R.drawable.check_alert));
+                    MediaPlayer.create(context,R.raw.check).start();
+                }
+
+                // --- Mapping coins in the UI
                 if(row[i][j]=='1')
                     a[i][j].setImageResource(0);
                 else
@@ -89,7 +101,7 @@ public class Mapping {
     public void reset(){
         for(int i=0;i<8;i++){
             for(int j=0;j<8;j++){
-                a[i][j].setBackgroundColor(context.getResources().getColor((i+j)%2==0 ? R.color.green : R.color.white));
+                a[i][j].setBackgroundColor(context.getResources().getColor((i+j)%2 == 0 ? R.color.green : R.color.white));
             }
         }
     }
@@ -124,6 +136,7 @@ public class Mapping {
                 a[x][y].setBackground(context.getResources().getDrawable((x + y) % 2 == 0 ? R.drawable.captured_square_green : R.drawable.captured_square));
             else if(fdn.getFdn().split(" ")[1].equals("w") && Character.isLowerCase(temp))
                 a[x][y].setBackground(context.getResources().getDrawable((x + y) % 2 == 0 ? R.drawable.captured_square_green : R.drawable.captured_square));
+
         }
     }
 }

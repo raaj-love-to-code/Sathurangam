@@ -1,5 +1,7 @@
 package com.anonymouscreations.sathurangam.chess;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 public class Rules {
@@ -9,10 +11,17 @@ public class Rules {
     char[][] row;
     char currentCoin;
     int x,y;
+    boolean strongValidation = true;
 
     // === Constructor
     public Rules(){
         pos = new ArrayList<Integer>();
+    }
+
+    // === Overloaded function to check without validation with same side coins
+    public ArrayList<Integer> check(Fdn fdn, char currentCoin, int curPos, boolean strongValidation){
+        this.strongValidation = strongValidation;
+        return check(fdn,currentCoin,curPos);
     }
 
     // === Check for rules
@@ -32,8 +41,15 @@ public class Rules {
             knight();
         else if(Character.toLowerCase(currentCoin) == 'b')
             bishop();
+        else if(Character.toLowerCase(currentCoin) == 'r')
+            rook();
+        else if(Character.toLowerCase(currentCoin) == 'q')
+            queen();
+        else if(Character.toLowerCase(currentCoin) == 'k')
+            king();
 
-        validate();
+        if(strongValidation)
+            validate();
         return pos;
     }
 
@@ -145,5 +161,63 @@ public class Rules {
             }
         }
     }
+
+    // === Rules for Rook
+    void rook(){
+        boolean up = true, down = true, right = true, left = true;
+
+        // --- Rook moves only in vertical or horizontal direction without jumping
+        for(int i=1;i<8;i++){
+            if(up && x-i >= 0) {
+                pos.add(((x - i) * 10) + y);
+                if(row[x-i][y] != '1')
+                    up = false;
+            }
+            if(down && x+i < 8) {
+                pos.add(((x + i) * 10) + y);
+                if (row[x + i][y] != '1')
+                    down = false;
+            }
+            if(right && y+i < 8) {
+                pos.add((x * 10) + y + i);
+                if(row[x][y+i] != '1')
+                    right = false;
+            }
+            if(left && y-i >= 0) {
+                pos.add((x * 10) + y - i);
+                if(row[x][y-i] != '1')
+                    left = false;
+            }
+        }
+    }
+
+    // === Rules for Queen
+    void queen(){
+
+        // --- Queen has both the characters of bishop and rook
+        bishop();
+        rook();
+    }
+
+    // === Rules for King
+    void king(){
+        if(x+1 < 8)
+            pos.add(((x+1)*10)+y);
+        if(x-1 >= 0)
+            pos.add(((x-1)*10)+y);
+        if(y+1 < 8)
+            pos.add((x*10)+y+1);
+        if(y-1 >= 0)
+            pos.add((x*10)+y-1);
+        if(x+1 < 8 && y+1 < 8)
+            pos.add(((x+1)*10)+y+1);
+        if(x-1 >= 0 && y-1 >= 0)
+            pos.add(((x-1)*10)+y-1);
+        if(x-1 >= 0 && y+1 < 8)
+            pos.add(((x-1)*10)+y+1);
+        if(x+1 < 8 && y-1 >= 0)
+            pos.add(((x+1)*10)+y-1);
+    }
+
 
 }

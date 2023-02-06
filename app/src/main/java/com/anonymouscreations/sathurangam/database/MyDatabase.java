@@ -1,20 +1,29 @@
 package com.anonymouscreations.sathurangam.database;
 
 import android.content.Context;
+import android.media.MediaPlayer;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.anonymouscreations.sathurangam.R;
 import com.anonymouscreations.sathurangam.activities.MainActivity;
+import com.anonymouscreations.sathurangam.chess.Fdn;
+import com.anonymouscreations.sathurangam.chess.Mapping;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class MyDatabase {
 
     Context context;
     DatabaseReference databaseReference;
+    boolean user = true;
 
     // === Constructor
     public MyDatabase(Context context, String child){
@@ -52,6 +61,23 @@ public class MyDatabase {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(context,"Something went wrong while updating FDN value\nTry again",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // === pull updated values in the database
+    public void pullData(Mapping mapping, Fdn fdn){
+        databaseReference.child("coin_position").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                MediaPlayer.create(context, R.raw.move).start();
+                fdn.setFdn(snapshot.getValue(String.class));
+                mapping.arrange(fdn);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(context,"Something went wrong\nWhile pulling data from the database",Toast.LENGTH_SHORT).show();
             }
         });
     }

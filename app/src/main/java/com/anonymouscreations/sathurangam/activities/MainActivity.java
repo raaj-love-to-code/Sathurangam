@@ -2,6 +2,7 @@ package com.anonymouscreations.sathurangam.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -57,9 +58,13 @@ public class MainActivity extends AppCompatActivity {
         mapping.arrange(fdn);
         mapping.reset();
         myDatabase.updateFdnString(fdn.getFdn());
+//        myDatabase.pullData(mapping,fdn);
 
         // --- Handling all button clicks
         handleClicks();
+
+        // --- Handling sound
+        MediaPlayer.create(this,R.raw.start).start();
 
     }
 
