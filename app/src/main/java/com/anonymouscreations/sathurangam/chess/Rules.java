@@ -10,17 +10,17 @@ public class Rules {
     ArrayList<Integer> pos;
     char[][] row;
     char currentCoin;
-    int x,y;
-    boolean strongValidation = true;
+    int x,y, curPos;
+    boolean kingValidation = true;
 
     // === Constructor
     public Rules(){
         pos = new ArrayList<Integer>();
     }
 
-    // === Overloaded function to check without validation with same side coins
-    public ArrayList<Integer> check(Fdn fdn, char currentCoin, int curPos, boolean strongValidation){
-        this.strongValidation = strongValidation;
+    // === Overloaded function to avoid calling King function from King class itself (To prevent infinite recursion)
+    public ArrayList<Integer> check(Fdn fdn, char currentCoin, int curPos, boolean kingValidation){
+        this.kingValidation = kingValidation;
         return check(fdn,currentCoin,curPos);
     }
 
@@ -30,6 +30,7 @@ public class Rules {
         pos.clear();
         this.fdn = fdn;
         this.currentCoin = currentCoin;
+        this.curPos = curPos;
         row = fdn.briefFDN();
         // --- Extracting coordinates of current position
         x = curPos/10;
@@ -48,18 +49,31 @@ public class Rules {
         else if(Character.toLowerCase(currentCoin) == 'k')
             king();
 
-        if(strongValidation)
-            validate();
+        validate();
+        if(kingValidation)
+            validateKing();
         return pos;
     }
 
     // === Validating the result for the same side coins
     void validate(){
+
         for(int i=0;i<pos.size();i++){
+
             char temp = row[pos.get(i)/10][pos.get(i)%10];
+
+            // --- Validating for the King
             if(fdn.getFdn().split(" ")[1].equals("w") && Character.isUpperCase(temp))
                 pos.remove(i--);
             else if(fdn.getFdn().split(" ")[1].equals("b") && Character.isLowerCase(temp))
+                pos.remove(i--);
+        }
+    }
+
+    // === Validate possible moves for king CHECK
+    void validateKing(){
+        for(int i=0;i<pos.size();i++){
+            if(King.kingValidate(fdn,pos.get(i),curPos).contains(pos.get(i)))
                 pos.remove(i--);
         }
     }
@@ -83,9 +97,9 @@ public class Rules {
 
         //  --- Position for second step move
         if (pos.size() > 0 &&
-                row[(x + (2*s))][y] == '1' &&
                 ((x == 6 && Character.isUpperCase(currentCoin)) ||
-                        (x == 1 && Character.isLowerCase(currentCoin))))
+                        (x == 1 && Character.isLowerCase(currentCoin))) &&
+                row[(x + (2*s))][y] == '1' )
             pos.add(((x + (2*s)) * 10) + y);
 
         //  --- Side position for capturing coin
@@ -122,7 +136,7 @@ public class Rules {
         }
     }
 
-    // === Rules for Bishop
+    // === Rules for bishop
     void bishop(){
 
         // --- Right down diagonal

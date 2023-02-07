@@ -76,17 +76,31 @@ public class Mapping {
     // === Updating coin positions in the board based on the value of Fdn string
     public void arrange(Fdn fdn){
         System.out.println(fdn.getFdn());
+
+        // --- Validating the status of the king after the last move
         char row[][] = fdn.briefFDN();
+        char check = '1';
+
+        // --- Assigning temporary object for validating the king status
+        Fdn tempFdn = new Fdn(fdn.getFdn());
+        String[] splitFdn = fdn.getFdn().split(" ");
+        tempFdn.setFdn(splitFdn[0] +" "+ (splitFdn[1].charAt(0) == 'b' ? 'w' : 'b') +" "+ splitFdn[2]);
+
+        // --- Assigning the opponent King for validation
+        char king = splitFdn[1].charAt(0) == 'b' ? 'k' : 'K';
+
+        // --- Validating the possibility for check and assigning the character to the variable for highlighting
+        if(King.hasCheck(tempFdn,king)) {
+            check = king;
+            MediaPlayer.create(context,R.raw.check).start();
+        }
 
         for(int i=0;i<this.row;i++){
             for(int j=0;j<col;j++){
 
-                // --- Check for king CHECK
-                int king = King.checkForKing(new Rules().check(fdn,row[i][j],(i*10)+j,false), row, row[i][j]);
-                if(king != -1) {
-                    a[king / 10][king % 10].setBackground(context.getResources().getDrawable((i + j) % 2 == 0 ? R.drawable.check_alert_green : R.drawable.check_alert));
-                    MediaPlayer.create(context,R.raw.check).start();
-                }
+                // --- Highlighting the background for the King in CHECK
+                if(check != '1' && row[i][j] == check)
+                    a[i][j].setBackground(context.getResources().getDrawable((i + j) % 2 == 0 ? R.drawable.check_alert_green : R.drawable.check_alert));
 
                 // --- Mapping coins in the UI
                 if(row[i][j]=='1')
@@ -95,12 +109,24 @@ public class Mapping {
                     a[i][j].setImageDrawable(coins[coinMap.indexOf(String.valueOf(row[i][j]))]);
             }
         }
+
+        // updating the king status to the FDN
+        fdn.setFdn(splitFdn[0]+" "+splitFdn[1]+" "+check);
+
+        reset(fdn);
     }
 
     // === Resetting the focus
-    public void reset(){
+    public void reset(Fdn fdn){
+        char[][] row = fdn.briefFDN();
         for(int i=0;i<8;i++){
             for(int j=0;j<8;j++){
+
+                // --- Eliminating the background of the king in CHECK
+                if(fdn.getFdn().split(" ")[2].charAt(0) == row[i][j] && row[i][j] != '1')
+                    continue;
+
+                // --- Reassigning the background for all squares
                 a[i][j].setBackgroundColor(context.getResources().getColor((i+j)%2 == 0 ? R.color.green : R.color.white));
             }
         }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.anonymouscreations.sathurangam.R;
 import com.anonymouscreations.sathurangam.database.MyDatabase;
@@ -37,33 +38,42 @@ public class Move {
     // === Updating the fdn in the board and database after movement of the coin
     public void moveCoin(int p, Mapping mapping, Fdn fdn, int curPos) {
 
+        // --- Coin movement sound
         MediaPlayer.create(context,R.raw.move).start();
 
         char[][] row = fdn.briefFDN();
-        mapping.reset();
+
+        // --- Resetting the backgrounds of all boxes
+        mapping.reset(fdn);
+
+        // --- Updating the move in the 2D array
         row[p/10][p%10] = row[curPos/10][curPos%10];
         row[curPos/10][curPos%10] = '1';
-        fdn.mergeFDN(row);
 
-        // --- Validating king CHECK for the move
-        /*
-           We need just the changes in the position alone, not the color, because
-           we need to check for the opponent king CHECK, Hence after this validation process
-           we can change the opponent turn in FDN text
-         */
-//        new King().checkForKing(rules.check(fdn,row[p/10][p%10],p),row, mapping.a, context, row[p/10][p%10]);
+        // --- Updating the changes to the FDN object
+        fdn.mergeFDN(row);
 
         // --- Changing the color to denote the opponent turn
         if(fdn.getFdn().split(" ")[1].equals("b"))
-            fdn.setFdn(fdn.getFdn().split(" ")[0]+" "+"w");
+            fdn.setFdn(fdn.getFdn().split(" ")[0]+" w "+fdn.getFdn().split(" ")[2]);
         else
-            fdn.setFdn(fdn.getFdn().split(" ")[0]+" "+"b");
-        mapping.arrange(fdn);
-        Log.e("MoveFdn",fdn.getFdn());
+            fdn.setFdn(fdn.getFdn().split(" ")[0]+" b "+fdn.getFdn().split(" ")[2]);
+
+        // --- Highlighting the background of the last moved coin
         mapping.a[curPos/10][curPos%10].setBackground(context.getResources().getDrawable(((curPos/10)+(curPos%10))%2==0 ? R.drawable.square_border_green : R.drawable.square_border));
         mapping.a[p/10][p%10].setBackground(context.getResources().getDrawable(((p/10)+(p%10))%2==0 ? R.drawable.square_border_green : R.drawable.square_border));
+
+        // --- Rearranging the coins in UI
+        mapping.arrange(fdn);
+
+        // --- Updating the FDN string in the database
         myDatabase.updateFdnString(fdn.getFdn());
 
+        // --- Validation for check mate
+        if(King.checkMate(fdn)) {
+            Toast.makeText(context, "Game over...", Toast.LENGTH_LONG).show();
+            MediaPlayer.create(context,R.raw.win).start();
+        }
     }
 
     // === Handling click
@@ -85,11 +95,10 @@ public class Move {
                         fdn.getFdn().split(" ")[1].equals("b") ||
                 Character.isUpperCase(curCoin.charAt(0)) &&
                         fdn.getFdn().split(" ")[1].equals("w")) {
-            mapping.reset();
+            mapping.reset(fdn);
             curPos = tempI;
             mapping.possiblePath(rules.check(fdn,currentCoin(tempI).charAt(0),curPos),fdn);
             temp.setBackgroundColor(context.getResources().getColor((tempI % 10 + tempI / 10) % 2 == 0 ? R.color.greenHigh : R.color.grey));
-
         }
 
         // --- Validating the destination and calling moveCoin method

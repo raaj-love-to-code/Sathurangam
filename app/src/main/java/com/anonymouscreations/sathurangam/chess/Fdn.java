@@ -59,11 +59,12 @@ public class Fdn {
             }
             s+=i==7 ? ' ' : '/';
         }
-        fdn = s+fdn.split(" ")[1];
+        fdn = s+fdn.split(" ")[1]+" "+fdn.split(" ")[2];
     }
 
     public void switchSide(){
         // *** Switch side while playing *** //
+
     }
 
 }

@@ -2,6 +2,7 @@ package com.anonymouscreations.sathurangam.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
@@ -47,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
         // --- Instantiating user defined classes with context as the constructor parameter
         mapping = new Mapping(getApplicationContext());
-        fdn = new Fdn("rnbkqbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBKQBNR w");
-        myDatabase = new MyDatabase(getApplicationContext(),"Automated Chess board");
+        fdn = new Fdn("rnbkqbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBKQBNR w 1");
+        myDatabase = new MyDatabase(getApplicationContext(),"Automated Chess board", this);
         rules = new Rules();
         move = new Move(getApplicationContext(),myDatabase);
 
@@ -56,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         mapping.mapPosition(llBoard);
         mapping.mapCoins();
         mapping.arrange(fdn);
-        mapping.reset();
+        mapping.reset(fdn);
         myDatabase.updateFdnString(fdn.getFdn());
 //        myDatabase.pullData(mapping,fdn);
 
@@ -66,17 +67,6 @@ public class MainActivity extends AppCompatActivity {
         // --- Handling sound
         MediaPlayer.create(this,R.raw.start).start();
 
-    }
-
-    // === Identifying the coin in the clicked position
-    String currentCoin(int t){
-        char row[][] = fdn.briefFDN();
-        char coin = row[t/10][t%10];
-        if(mapping.coinMap.contains(String.valueOf(coin)) &&
-            ((Character.isUpperCase(coin) && fdn.getFdn().split(" ")[1].equals("w")) ||
-            (Character.isLowerCase(coin) && fdn.getFdn().split(" ")[1].equals("b"))))
-            return String.valueOf(coin);
-        return "1";
     }
 
     // === Manual Control value processing
@@ -110,10 +100,15 @@ public class MainActivity extends AppCompatActivity {
         btnSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mapping.reset();
+                mapping.reset(fdn);
                 manualControl = new int[4];
                 btnSend.setText("Send");
                 controlString="0";
+                if(llBoard.getRotation() == 180)
+                    llBoard.setRotation(0);
+                else
+                    llBoard.setRotation(180);
+
             }
         });
         btnSend.setOnClickListener(new View.OnClickListener() {
