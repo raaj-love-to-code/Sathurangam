@@ -552,7 +552,7 @@
         android:layout_gravity="center"
         android:padding="10dp"
         android:textStyle="bold"
-        android:background="@color/greenHighlight"
+        android:background="@color/themeText"
         android:textColor="@color/white"
         android:layout_marginTop="10dp"/>
 
@@ -560,7 +560,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Manual Movement"
-        android:textColor="@color/greenHighlight"
+        android:textColor="@color/themeText"
         android:gravity="center"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -576,7 +576,7 @@
         android:gravity="center"
         android:padding="10dp"
         android:textStyle="bold"
-        android:background="@color/greenHighlight"
+        android:background="@color/themeText"
         android:textColor="@color/white"
         android:layout_marginTop="10dp"/>
 
@@ -596,7 +596,7 @@
             android:layout_gravity="center"
             android:padding="10dp"
             android:textStyle="bold"
-            android:background="@color/greenHighlight"
+            android:background="@color/themeText"
             android:textColor="@color/white"
             android:layout_marginRight="50dp"/>
 
@@ -609,7 +609,7 @@
             android:layout_gravity="center"
             android:padding="10dp"
             android:textStyle="bold"
-            android:background="@color/green"
+            android:background="@color/themeBackground"
             android:textColor="@color/black"/>
 
         <TextView
@@ -621,7 +621,7 @@
             android:layout_gravity="center"
             android:padding="10dp"
             android:textStyle="bold"
-            android:background="@color/greenHighlight"
+            android:background="@color/themeText"
             android:textColor="@color/white"
             android:layout_marginLeft="50dp"/>
 
@@ -636,7 +636,7 @@
         android:gravity="center"
         android:padding="10dp"
         android:textStyle="bold"
-        android:background="@color/greenHighlight"
+        android:background="@color/themeText"
         android:textColor="@color/white"
         android:layout_marginTop="10dp"/>
 

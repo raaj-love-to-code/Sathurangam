@@ -50,6 +50,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // --- Code to hide the support action bar
+        getSupportActionBar().hide();
+
         // --- Mapping xml elements to java objects
         btnSwitch = findViewById(R.id.btnSwitch);
         btnLeft = findViewById(R.id.btnLeft);
@@ -201,4 +204,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // --- Stopping the timer function while exiting the application
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        gameOver = true;
+        curPos = -1;
+        finish();
+    }
 }

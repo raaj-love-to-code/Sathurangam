@@ -98,9 +98,9 @@ public class Mapping {
         for(int i=0;i<this.row;i++){
             for(int j=0;j<col;j++){
 
-                // --- Highlighting the background for the King in CHECK
-                if(check != '1' && row[i][j] == check)
-                    a[i][j].setBackground(context.getResources().getDrawable((i + j) % 2 == 0 ? R.drawable.check_alert_green : R.drawable.check_alert));
+//                // --- Highlighting the background for the King in CHECK
+//                if(check != '1' && row[i][j] == check)
+//                    a[i][j].setBackground(context.getResources().getDrawable((i + j) % 2 == 0 ? R.drawable.check_alert_green : R.drawable.check_alert));
 
                 // --- Mapping coins in the UI
                 if(row[i][j]=='1')
@@ -113,6 +113,7 @@ public class Mapping {
         // updating the king status to the FDN
         fdn.setFdn(splitFdn[0]+" "+splitFdn[1]+" "+check);
 
+        // --- resetting the background
         reset(fdn);
     }
 
@@ -122,9 +123,11 @@ public class Mapping {
         for(int i=0;i<8;i++){
             for(int j=0;j<8;j++){
 
-                // --- Eliminating the background of the king in CHECK
-                if(fdn.getFdn().split(" ")[2].charAt(0) == row[i][j] && row[i][j] != '1')
+                // --- Highlighting the background of the king in CHECK
+                if(fdn.getFdn().split(" ")[2].charAt(0) == row[i][j] && row[i][j] != '1') {
+                    a[i][j].setBackground(context.getResources().getDrawable((i + j) % 2 == 0 ? R.drawable.check_alert_green : R.drawable.check_alert));
                     continue;
+                }
 
                 // --- Reassigning the background for all squares
                 a[i][j].setBackgroundColor(context.getResources().getColor((i+j)%2 == 0 ? R.color.green : R.color.white));

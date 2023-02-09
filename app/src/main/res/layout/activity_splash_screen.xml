@@ -4,15 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.SplashScreen">
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@color/themeBackground"
+    tools:context=".activities.SplashScreenActivity">
 
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/logo"/>
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="Sathurangam"
         android:textSize="32sp"
-        android:textColor="@color/green"
-        android:gravity="center"
+        android:textColor="@color/themeText"
         android:textStyle="bold"/>
+
 </LinearLayout>

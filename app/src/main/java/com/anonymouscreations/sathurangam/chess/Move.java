@@ -2,9 +2,7 @@ package com.anonymouscreations.sathurangam.chess;
 
 import android.content.Context;
 import android.media.MediaPlayer;
-import android.util.Log;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.anonymouscreations.sathurangam.R;
 import com.anonymouscreations.sathurangam.activities.MainActivity;
@@ -60,12 +58,12 @@ public class Move {
         else
             fdn.setFdn(fdn.getFdn().split(" ")[0]+" b "+fdn.getFdn().split(" ")[2]);
 
-        // --- Highlighting the background of the last moved coin
-        mapping.a[curPos/10][curPos%10].setBackground(context.getResources().getDrawable(((curPos/10)+(curPos%10))%2==0 ? R.drawable.square_border_green : R.drawable.square_border));
-        mapping.a[p/10][p%10].setBackground(context.getResources().getDrawable(((p/10)+(p%10))%2==0 ? R.drawable.square_border_green : R.drawable.square_border));
-
         // --- Rearranging the coins in UI
         mapping.arrange(fdn);
+
+        // --- Highlighting the background of the last moved coin
+        mapping.a[curPos/10][curPos%10].setBackground(context.getResources().getDrawable(((curPos/10)+(curPos%10))%2 == 0 ? R.drawable.square_border_green : R.drawable.square_border));
+        mapping.a[p/10][p%10].setBackground(context.getResources().getDrawable(((p/10)+(p%10))%2==0 ? R.drawable.square_border_green : R.drawable.square_border));
 
         // --- Updating the FDN string in the database
         myDatabase.updateFdnString(fdn.getFdn());
@@ -98,7 +96,11 @@ public class Move {
                         fdn.getFdn().split(" ")[1].equals("w")) {
             mapping.reset(fdn);
             curPos = tempI;
+
+            // --- Function to show possible path for the selected coin
             mapping.possiblePath(rules.check(fdn,currentCoin(tempI).charAt(0),curPos),fdn);
+
+            // --- Setting background color for the current clicked coin
             temp.setBackgroundColor(context.getResources().getColor((tempI % 10 + tempI / 10) % 2 == 0 ? R.color.greenHigh : R.color.grey));
         }
 

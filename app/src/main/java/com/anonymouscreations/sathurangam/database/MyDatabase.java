@@ -1,7 +1,9 @@
 package com.anonymouscreations.sathurangam.database;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.util.Log;
 import android.widget.Toast;
@@ -22,15 +24,18 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+
 public class MyDatabase {
 
     Context context;
     DatabaseReference databaseReference;
-    MainActivity mainActivity;
+    Activity mainActivity;
     ProgressDialog progressDialog;
-
+    boolean existingUser;
     // === Constructor
-    public MyDatabase(Context context, String child, MainActivity mainActivity){
+    public MyDatabase(Context context, String child, Activity mainActivity){
+        existingUser = false;
         this.mainActivity = mainActivity;
         this.context = context;
         databaseReference = FirebaseDatabase.getInstance().getReference().child(child);
@@ -96,10 +101,101 @@ public class MyDatabase {
         });
     }
 
+    // --- Function to display progress dialog while updating the data in the database
     void showLoading(){
-        progressDialog.setMessage("Upadating...");
+        progressDialog.setMessage("Please wait...");
         progressDialog.setCancelable(false);
         progressDialog.show();
+    }
+
+    // --- Validating the existence of the user
+    public void createAccount(UserData data){
+        showLoading();
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                UserData tempData;
+                for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    tempData = dataSnapshot.getValue(UserData.class);
+                    if(tempData.getEmail().equals(data.getEmail())) {
+                        existingUser = true;
+                        break;
+                    }
+                }
+
+                // --- Validating for the existing user
+                if(existingUser) {
+                    Toast.makeText(context, "Account already exists, Try logging in with "+data.getEmail(), Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
+                }
+                else
+                    createNewAccount(data);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                progressDialog.dismiss();
+                Toast.makeText(context,"Something went wrong, try again",Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    // --- Creating new user in the database
+    void createNewAccount(UserData data){
+        databaseReference.child(String.valueOf(System.currentTimeMillis())).setValue(data)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        progressDialog.dismiss();
+                        Toast.makeText(context, "Account created successfully", Toast.LENGTH_SHORT).show();
+                        mainActivity.startActivity(new Intent(mainActivity,MainActivity.class));
+                        mainActivity.finish();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        progressDialog.dismiss();
+                        Toast.makeText(context, "Something went wrong! try again", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    // --- login function
+    public void loginUser(LoginUserData loginUserData){
+        showLoading();
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                LoginUserData data;
+                boolean password = false;
+
+                for(DataSnapshot dataSnapshot : snapshot.getChildren()){
+                    data = dataSnapshot.getValue(LoginUserData.class);
+                    if(data.getEmail().equals(loginUserData.getEmail())) {
+                        existingUser = true;
+                        if (data.getPassword().equals(loginUserData.getPassword()))
+                            password = true;
+                    }
+                }
+
+                progressDialog.dismiss();
+                if(existingUser && password){
+                    Toast.makeText(context, "Successful", Toast.LENGTH_SHORT).show();
+                    mainActivity.startActivity(new Intent(mainActivity,MainActivity.class));
+                    mainActivity.finish();
+                }else if(existingUser)
+                    Toast.makeText(context, "Incorrect Password! Try again", Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(context, "Account not found!\nCreate new account", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                progressDialog.dismiss();
+                Toast.makeText(context, "Something went wrong! Try again", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 }
