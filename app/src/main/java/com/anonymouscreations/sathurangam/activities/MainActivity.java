@@ -2,12 +2,20 @@ package com.anonymouscreations.sathurangam.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.anonymouscreations.sathurangam.R;
@@ -16,6 +24,9 @@ import com.anonymouscreations.sathurangam.chess.Fdn;
 import com.anonymouscreations.sathurangam.chess.Mapping;
 import com.anonymouscreations.sathurangam.chess.Move;
 import com.anonymouscreations.sathurangam.chess.Rules;
+import com.anonymouscreations.sathurangam.popup.GameOverPopup;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -30,7 +41,9 @@ public class MainActivity extends AppCompatActivity {
     int row = 8, col = 8, manualControl[] = new int[4];
     public int curPos = -1;
     String controlString = "0";
-
+    public static boolean gameOver;
+    public static int duration, halfMove;
+    public static char userColor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +59,11 @@ public class MainActivity extends AppCompatActivity {
         btnSend = findViewById(R.id.btnSend);
         llBoard = findViewById(R.id.llBoard);
 
+        // --- Initializing variables
+        gameOver = false;
+        duration = halfMove = 0;
+        userColor = 'w';
+
         // --- Instantiating user defined classes with context as the constructor parameter
         mapping = new Mapping(getApplicationContext());
         fdn = new Fdn("rnbkqbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBKQBNR w 1");
@@ -60,6 +78,9 @@ public class MainActivity extends AppCompatActivity {
         mapping.reset(fdn);
         myDatabase.updateFdnString(fdn.getFdn());
 //        myDatabase.pullData(mapping,fdn);
+
+        // --- Start duration for match
+        startDuration();
 
         // --- Handling all button clicks
         handleClicks();
@@ -151,9 +172,33 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         curPos = move.clickCoin(mapping,rules,fdn,temp,tempI,curPos);
+
+                        // --- Validating for game over
+                        if(curPos == -2) {
+                            new GameOverPopup(view).gameOver(fdn);
+                            gameOver = true;
+                            curPos = -1;
+                        }
                     }
                 });
             }
         }
     }
+
+    // --- Countdown to tract the duration of the match
+    void startDuration(){
+        Handler handler = new Handler();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if(!gameOver) {
+                    duration++;
+                    handler.postDelayed(this,1000);
+                }
+
+                Log.e("Time",duration+"");
+            }
+        });
+    }
+
 }

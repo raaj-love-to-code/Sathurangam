@@ -44,6 +44,7 @@ public class MyDatabase {
         databaseReference.child("control").setValue(controlString).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
+
                 Toast.makeText(context,"Data updated successfully "+controlString,Toast.LENGTH_SHORT).show();
             }
         }).addOnFailureListener(new OnFailureListener() {

@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.anonymouscreations.sathurangam.R;
+import com.anonymouscreations.sathurangam.activities.MainActivity;
 import com.anonymouscreations.sathurangam.database.MyDatabase;
 
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ public class Move {
     }
 
     // === Updating the fdn in the board and database after movement of the coin
-    public void moveCoin(int p, Mapping mapping, Fdn fdn, int curPos) {
+    public boolean moveCoin(int p, Mapping mapping, Fdn fdn, int curPos) {
 
         // --- Coin movement sound
         MediaPlayer.create(context,R.raw.move).start();
@@ -70,10 +71,10 @@ public class Move {
         myDatabase.updateFdnString(fdn.getFdn());
 
         // --- Validation for check mate
-        if(King.checkMate(fdn)) {
-            Toast.makeText(context, "Game over...", Toast.LENGTH_LONG).show();
-            MediaPlayer.create(context,R.raw.win).start();
-        }
+        if(King.checkMate(fdn))
+            return false;
+
+        return true;
     }
 
     // === Handling click
@@ -84,8 +85,8 @@ public class Move {
 
         String curCoin = currentCoin(tempI);
 
-        // --- Validating click on empty position
-        if(currentCoin(tempI).equals("1") && curPos == -1)
+        // --- Validating click on empty position and game over condition
+        if((currentCoin(tempI).equals("1") && curPos == -1) || MainActivity.gameOver)
             return curPos;
 
         // --- Setting possible path for the clicked coin
@@ -103,8 +104,15 @@ public class Move {
 
         // --- Validating the destination and calling moveCoin method
         else if(validMove(tempI, rules.check(fdn,currentCoin(curPos).charAt(0),curPos))) {
-            moveCoin(tempI, mapping, fdn, curPos);
-            curPos = -1;
+
+            // --- Updating move count on each successful move
+            MainActivity.halfMove++;
+
+            // --- Validating for game over by updating the curPos || '-2' => game over  ||
+            if(moveCoin(tempI, mapping, fdn, curPos))
+                curPos = -1;
+            else
+                curPos = -2;
         }
 
         // --- Updating the current position in the MainActivity
