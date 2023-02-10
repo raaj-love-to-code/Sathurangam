@@ -11,10 +11,13 @@
     <color name="green">#1AA5FF</color>
     <color name="greenHigh">#055C9D</color>
     <color name="greenHighlight">#00305E</color>
-    <color name="grey">#C9C9C9</color>
+    <color name="grey">#F5F5F5</color>
     <color name="red">#EC1313</color>
     <color name="yellow">#2FFFC107</color>
 
     <color name="themeBackground">#BFD7ED</color>
     <color name="themeText">#055C9D</color>
+    <color name="gold">#FFC300</color>
+
+    <color name="backgroundTransparent">#E6FFFFFF</color>
 </resources>

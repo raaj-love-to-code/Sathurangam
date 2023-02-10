@@ -132,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
                     llBoard.setRotation(0);
                 else
                     llBoard.setRotation(180);
-
             }
         });
         btnSend.setOnClickListener(new View.OnClickListener() {

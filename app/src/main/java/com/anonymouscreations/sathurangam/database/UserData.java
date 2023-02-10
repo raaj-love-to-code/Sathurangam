@@ -1,6 +1,8 @@
 package com.anonymouscreations.sathurangam.database;
 
-public class UserData {
+import java.io.Serializable;
+
+public class UserData implements Serializable {
 
     private String name, email, password;
 
@@ -27,6 +29,5 @@ public class UserData {
     public void setPassword(String password) {
         this.password = password;
     }
-
 
 }

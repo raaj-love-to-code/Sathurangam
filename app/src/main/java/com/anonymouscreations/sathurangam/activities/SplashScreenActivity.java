@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
+import com.anonymouscreations.sathurangam.LocalData.LocalUserData;
 import com.anonymouscreations.sathurangam.R;
+import com.anonymouscreations.sathurangam.database.UserData;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
@@ -19,9 +21,19 @@ public class SplashScreenActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                startActivity(new Intent(SplashScreenActivity.this,LoginActivity.class));
+                if(alreadyLoggedIn())
+                    startActivity(new Intent(SplashScreenActivity.this, HomeActivity.class));
+                else
+                    startActivity(new Intent(SplashScreenActivity.this,LoginActivity.class));
                 finish();
             }
         },2000);
+    }
+
+    boolean alreadyLoggedIn(){
+        UserData data = new LocalUserData(getApplicationContext()).getUserData();
+        if(data != null && data.getEmail().length()>0 && data.getPassword().length()>0 && data.getName().length() > 0)
+            return true;
+        return false;
     }
 }

@@ -10,8 +10,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.anonymouscreations.sathurangam.LocalData.LocalUserData;
 import com.anonymouscreations.sathurangam.R;
-import com.anonymouscreations.sathurangam.activities.MainActivity;
+import com.anonymouscreations.sathurangam.activities.HomeActivity;
 import com.anonymouscreations.sathurangam.chess.Fdn;
 import com.anonymouscreations.sathurangam.chess.Mapping;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -23,8 +24,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
 
 public class MyDatabase {
 
@@ -101,23 +100,27 @@ public class MyDatabase {
         });
     }
 
-    // --- Function to display progress dialog while updating the data in the database
+    // === Function to display progress dialog while updating the data in the database
     void showLoading(){
         progressDialog.setMessage("Please wait...");
         progressDialog.setCancelable(false);
         progressDialog.show();
     }
 
-    // --- Validating the existence of the user
-    public void createAccount(UserData data){
+    // === Validating the user existence for creating a new account
+    public void checkAccountExistence(UserData data){
+
+        // --- Calling progress dialog
         showLoading();
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 UserData tempData;
+                String currentChild = "";
                 for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     tempData = dataSnapshot.getValue(UserData.class);
                     if(tempData.getEmail().equals(data.getEmail())) {
+                        currentChild = dataSnapshot.getKey();
                         existingUser = true;
                         break;
                     }
@@ -130,7 +133,6 @@ public class MyDatabase {
                 }
                 else
                     createNewAccount(data);
-
             }
 
             @Override
@@ -141,7 +143,7 @@ public class MyDatabase {
         });
     }
 
-    // --- Creating new user in the database
+    // === Creating new user in the database
     void createNewAccount(UserData data){
         databaseReference.child(String.valueOf(System.currentTimeMillis())).setValue(data)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -149,7 +151,8 @@ public class MyDatabase {
                     public void onSuccess(Void unused) {
                         progressDialog.dismiss();
                         Toast.makeText(context, "Account created successfully", Toast.LENGTH_SHORT).show();
-                        mainActivity.startActivity(new Intent(mainActivity,MainActivity.class));
+                        new LocalUserData(context).storeLogin(data);
+                        mainActivity.startActivity(new Intent(mainActivity,HomeActivity.class));
                         mainActivity.finish();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -161,28 +164,33 @@ public class MyDatabase {
                 });
     }
 
-    // --- login function
+    // === login database function
     public void loginUser(LoginUserData loginUserData){
+
+        // --- Calling function show progress dialog
         showLoading();
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                LoginUserData data;
+                UserData data = new UserData();
                 boolean password = false;
 
+                // --- Validating email and password from database
                 for(DataSnapshot dataSnapshot : snapshot.getChildren()){
-                    data = dataSnapshot.getValue(LoginUserData.class);
+                    data = dataSnapshot.getValue(UserData.class);
                     if(data.getEmail().equals(loginUserData.getEmail())) {
                         existingUser = true;
                         if (data.getPassword().equals(loginUserData.getPassword()))
                             password = true;
                     }
                 }
-
                 progressDialog.dismiss();
+
+                // --- Validating for user and password status
                 if(existingUser && password){
                     Toast.makeText(context, "Successful", Toast.LENGTH_SHORT).show();
-                    mainActivity.startActivity(new Intent(mainActivity,MainActivity.class));
+                    new LocalUserData(context).storeLogin(data);
+                    mainActivity.startActivity(new Intent(mainActivity, HomeActivity.class));
                     mainActivity.finish();
                 }else if(existingUser)
                     Toast.makeText(context, "Incorrect Password! Try again", Toast.LENGTH_SHORT).show();
@@ -194,6 +202,43 @@ public class MyDatabase {
             public void onCancelled(@NonNull DatabaseError error) {
                 progressDialog.dismiss();
                 Toast.makeText(context, "Something went wrong! Try again", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // === Function to store the profile url
+    public void storeProfile(String email, String img){
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                UserData data;
+                String currentChild = "";
+                for(DataSnapshot dataSnapshot : snapshot.getChildren()){
+                    data = dataSnapshot.getValue(UserData.class);
+                    if(data.getEmail().equals(email)) {
+                        currentChild = dataSnapshot.getKey();
+                        break;
+                    }
+                }
+                if(!currentChild.equals(""))
+                    saveProfile(currentChild,img);
+                else
+                    Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    void saveProfile(String child, String profile){
+        showLoading();
+        databaseReference.child(child).child("profile").setValue(profile).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                progressDialog.dismiss();
             }
         });
     }

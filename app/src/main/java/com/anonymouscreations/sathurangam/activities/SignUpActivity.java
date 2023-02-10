@@ -49,7 +49,7 @@ public class SignUpActivity extends AppCompatActivity {
 
                 // --- If validate returns true database object is created and method for creating new account is called
                 if(validate())
-                    new MyDatabase(getApplicationContext(),"user",SignUpActivity.this).createAccount(userData);
+                    new MyDatabase(getApplicationContext(),"user",SignUpActivity.this).checkAccountExistence(userData);
                 else
                     Toast.makeText(SignUpActivity.this, "All fields are mandatory", Toast.LENGTH_SHORT).show();
             }

@@ -1,6 +1,5 @@
 package com.anonymouscreations.sathurangam.popup;
 
-import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.view.Gravity;
@@ -32,8 +31,8 @@ public class GameOverPopup {
 
         // --- Configuring popup layout to display in the main activity
         LayoutInflater inflater = (LayoutInflater) view.getContext().getSystemService(view.getContext().LAYOUT_INFLATER_SERVICE);
-        View popupView = inflater.inflate(R.layout.game_over_popup,null);
-        final PopupWindow popupWindow = new PopupWindow(popupView, LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT,false);
+        View popupView = inflater.inflate(R.layout.popup_game_over,null);
+        final PopupWindow popupWindow = new PopupWindow(popupView, LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT,false);
 
         // --- Mapping the elements of popup layout to the java objects
         tvGameStatus = popupView.findViewById(R.id.tvGameStatus);

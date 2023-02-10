@@ -13,11 +13,14 @@
         android:theme="@style/Theme.Sathurangam"
         tools:targetApi="31">
         <activity
+            android:name=".activities.HomeActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.SignUpActivity"
             android:exported="false" />
         <activity
             android:name=".activities.LoginActivity"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
             android:name=".activities.MainActivity"
             android:exported="false">
