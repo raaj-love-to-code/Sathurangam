@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class UserData implements Serializable {
 
-    private String name, email, password;
+    private String name, email, password, profile;
 
     public String getName() {
         return name;
@@ -30,4 +30,11 @@ public class UserData implements Serializable {
         this.password = password;
     }
 
+    public String getProfile() {
+        return profile;
+    }
+
+    public void setProfile(String profile) {
+        this.profile = profile;
+    }
 }

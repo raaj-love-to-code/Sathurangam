@@ -19,5 +19,9 @@
     <color name="themeText">#055C9D</color>
     <color name="gold">#FFC300</color>
 
-    <color name="backgroundTransparent">#E6FFFFFF</color>
+
+    <color name="accept">#009944</color>
+    <color name="decline">#cf000f</color>
+
+    <color name="backgroundTransparent">#80000000</color>
 </resources>

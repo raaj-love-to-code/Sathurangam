@@ -12,6 +12,7 @@ import androidx.core.content.res.ResourcesCompat;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -30,6 +31,8 @@ import com.anonymouscreations.sathurangam.Tools.BitmapHelper;
 import com.anonymouscreations.sathurangam.database.MyDatabase;
 import com.anonymouscreations.sathurangam.popup.ProfilePopup;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Locale;
 
 public class HomeActivity extends AppCompatActivity {
@@ -64,6 +67,9 @@ public class HomeActivity extends AppCompatActivity {
         tvSPOWinPercentage = findViewById(R.id.tvSPOWinPercentage);
         tvTPOTotalMatch = findViewById(R.id.tvTPOTotalMatch);
         tvTPOWinPercentage = findViewById(R.id.tvTPOWinPercentage);
+
+        // --- Set notification and profile
+        setDetails();
 
         // --- Button smart chess click event
         cvSmartChessBoard.setOnClickListener(new View.OnClickListener() {
@@ -102,22 +108,25 @@ public class HomeActivity extends AppCompatActivity {
                             Uri uri = data.getData();
                             Bitmap bitmap;
 
+                            // --- Validating the file size MAX 5MB
+                            int MAX_PHOTO_SIZE = 5;
+                            try {
+                                AssetFileDescriptor assetFileDescriptor = getApplicationContext().getContentResolver().openAssetFileDescriptor(uri,"r");
+                                if(assetFileDescriptor.getLength()/1024 > MAX_PHOTO_SIZE*1024) {
+                                    Toast.makeText(this, "Select image less than 2MB", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                            } catch (FileNotFoundException e) {
+                                Toast.makeText(this, "Something went wrong! Select the image again!", Toast.LENGTH_SHORT).show();
+                            }
+
                             // --- Trying to assigning data to bitmap object
                             try{
                                 bitmap = MediaStore.Images.Media.getBitmap(HomeActivity.this.getContentResolver(),uri);
 
-                                String sample = BitmapHelper.BitmapToString(bitmap);
-
                                 // --- Calling the static method of popup window to set the image in the popup element
-                                ProfilePopup.setProfile(BitmapHelper.StringToBitmap(sample));
+                                ProfilePopup.setProfile(bitmap, uri);
 
-                                // --- Calling the database method to store the profile image in the firebase
-                                LocalUserData localUserData = new LocalUserData(getApplicationContext());
-                                localUserData.storeProfile(sample);
-
-                                // --- Object to store data in the database
-//                                new MyDatabase(getApplicationContext(),"user",HomeActivity.this).storeProfile(localUserData.getUserData().getEmail(),sample);
-//                                Log.e("Profile Bitmap String", BitmapHelper.BitmapToString(bitmap).length()+"");
                             }catch(Exception e){
                                 Toast.makeText(HomeActivity.this, "Try selecting again", Toast.LENGTH_SHORT).show();
                             }
@@ -127,4 +136,10 @@ public class HomeActivity extends AppCompatActivity {
         );
     }
 
+    // === Function to set profile and notification details
+    void setDetails(){
+        LocalUserData localUserData = new LocalUserData(getApplicationContext());
+        if(!localUserData.getProfile().equals(""))
+            ivProfile.setImageBitmap(BitmapHelper.stringToBitmap(localUserData.getProfile()));
+    }
 }

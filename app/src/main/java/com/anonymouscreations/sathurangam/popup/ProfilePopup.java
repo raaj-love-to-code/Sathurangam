@@ -3,6 +3,8 @@ package com.anonymouscreations.sathurangam.popup;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.fragment.app.Fragment;
@@ -18,16 +21,21 @@ import com.anonymouscreations.sathurangam.LocalData.LocalUserData;
 import com.anonymouscreations.sathurangam.R;
 import com.anonymouscreations.sathurangam.Tools.BitmapHelper;
 import com.anonymouscreations.sathurangam.activities.LoginActivity;
+import com.anonymouscreations.sathurangam.database.MyDatabase;
 import com.anonymouscreations.sathurangam.database.UserData;
 
 public class ProfilePopup extends Activity{
 
     // --- Declaring object for the popup window elements
-    TextView tvWin, tvName, btnSignOut, btnEditPhoto;
+    TextView tvWin, tvName, btnSignOut;
     ImageView btnClose;
-    static ImageView btnProfile;
 
-    View view;
+    // --- Declared static to assign values without creating the object
+    static ImageView btnProfile;
+    static TextView btnEditPhoto;
+    static Uri uri;
+    static Bitmap bitmap;
+    static View view;
     Activity activity;
     ActivityResultLauncher<Intent> activityResultLauncher;
 
@@ -79,7 +87,24 @@ public class ProfilePopup extends Activity{
         btnEditPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                editPhoto();
+
+                // --- On clicking edit photo button
+                if(btnEditPhoto.getText().equals("Edit Photo"))
+                    editPhoto();
+
+                // --- On click save changes button
+                else if(btnEditPhoto.getText().equals("Save Changes")) {
+                    ImageView profile = activity.findViewById(R.id.ivProfile);
+                    profile.setImageBitmap(bitmap);
+
+                    // --- Store bitmap image in firebase and local storage
+                    LocalUserData localUserData = new LocalUserData(view.getContext());
+                    localUserData.storeProfile(BitmapHelper.bitmapToString(bitmap));
+
+                    // --- Object to store data in the database
+                    new MyDatabase(view.getContext(),"user",activity).storeProfile(localUserData.getUserData().getEmail(),uri,bitmap);
+                    popupWindow.dismiss();
+                }
             }
         });
 
@@ -87,6 +112,7 @@ public class ProfilePopup extends Activity{
         popupWindow.showAtLocation(view, Gravity.CENTER,0,0);
     }
 
+    // === Function to load details from the local storage
     void showDetails(){
 
         // --- Creating object for the LocalUserData class
@@ -104,20 +130,27 @@ public class ProfilePopup extends Activity{
             return;
 
         // --- Setting image in the element
-        btnProfile.setImageBitmap(BitmapHelper.StringToBitmap(img));
+        btnProfile.setImageBitmap(BitmapHelper.stringToBitmap(img));
     }
 
-    // --- Function called after clicking edit photo
+    // === Function called after clicking edit photo
     void editPhoto(){
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
+
+        // --- This calls the launcher in the HomeActivity
         activityResultLauncher.launch(intent);
     }
 
-    // --- Function which is static called from the HomeActivity
-    public static void setProfile(Bitmap bitmap){
+    // === Function which is static, have been called from the HomeActivity
+    public static void setProfile(Bitmap bitmap, Uri uri){
+
+        // --- Updating the image in the popup and text of the button is modified
         btnProfile.setImageBitmap(bitmap);
+        btnEditPhoto.setText("Save Changes");
+        ProfilePopup.bitmap = bitmap;
+        ProfilePopup.uri = uri;
     }
 
 }

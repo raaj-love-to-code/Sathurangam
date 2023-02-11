@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -12,6 +14,7 @@ import androidx.annotation.NonNull;
 
 import com.anonymouscreations.sathurangam.LocalData.LocalUserData;
 import com.anonymouscreations.sathurangam.R;
+import com.anonymouscreations.sathurangam.Tools.BitmapHelper;
 import com.anonymouscreations.sathurangam.activities.HomeActivity;
 import com.anonymouscreations.sathurangam.chess.Fdn;
 import com.anonymouscreations.sathurangam.chess.Mapping;
@@ -24,6 +27,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 public class MyDatabase {
 
@@ -32,6 +38,9 @@ public class MyDatabase {
     Activity mainActivity;
     ProgressDialog progressDialog;
     boolean existingUser;
+    String currentChild;
+    Bitmap bitmap;
+
     // === Constructor
     public MyDatabase(Context context, String child, Activity mainActivity){
         existingUser = false;
@@ -39,6 +48,8 @@ public class MyDatabase {
         this.context = context;
         databaseReference = FirebaseDatabase.getInstance().getReference().child(child);
         progressDialog = new ProgressDialog(mainActivity);
+        currentChild = "";
+        bitmap = null;
     }
 
     // === Updating Control data in the firebase
@@ -48,7 +59,6 @@ public class MyDatabase {
         databaseReference.child("control").setValue(controlString).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
-
                 Toast.makeText(context,"Data updated successfully "+controlString,Toast.LENGTH_SHORT).show();
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -82,24 +92,6 @@ public class MyDatabase {
         });
     }
 
-    // === pull updated values in the database
-    public void pullData(Mapping mapping, Fdn fdn){
-
-        databaseReference.child("coin_position").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                MediaPlayer.create(context, R.raw.move).start();
-                fdn.setFdn(snapshot.getValue(String.class));
-                mapping.arrange(fdn);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(context,"Something went wrong\nWhile pulling data from the database",Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
     // === Function to display progress dialog while updating the data in the database
     void showLoading(){
         progressDialog.setMessage("Please wait...");
@@ -116,11 +108,11 @@ public class MyDatabase {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 UserData tempData;
-                String currentChild = "";
+
+                // --- Looping through all users for existing user account
                 for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     tempData = dataSnapshot.getValue(UserData.class);
                     if(tempData.getEmail().equals(data.getEmail())) {
-                        currentChild = dataSnapshot.getKey();
                         existingUser = true;
                         break;
                     }
@@ -144,7 +136,7 @@ public class MyDatabase {
     }
 
     // === Creating new user in the database
-    void createNewAccount(UserData data){
+    private void createNewAccount(UserData data){
         databaseReference.child(String.valueOf(System.currentTimeMillis())).setValue(data)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -207,12 +199,18 @@ public class MyDatabase {
     }
 
     // === Function to store the profile url
-    public void storeProfile(String email, String img){
+    public void storeProfile(String email, Uri uri, Bitmap bitmap){
+        this.bitmap = bitmap;
+
+        // --- Display loading progress dialog
+        progressDialog.setMessage("Updating profile photo in the database");
+        progressDialog.show();
+
+        // --- Extracting key for the user in firebase Real time Database
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 UserData data;
-                String currentChild = "";
                 for(DataSnapshot dataSnapshot : snapshot.getChildren()){
                     data = dataSnapshot.getValue(UserData.class);
                     if(data.getEmail().equals(email)) {
@@ -220,27 +218,65 @@ public class MyDatabase {
                         break;
                     }
                 }
+
+                // --- Validating for the key
                 if(!currentChild.equals(""))
-                    saveProfile(currentChild,img);
+                    saveProfileInDatabaseStorage(currentChild, uri);
                 else
                     Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                progressDialog.dismiss();
                 Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    void saveProfile(String child, String profile){
-        showLoading();
-        databaseReference.child(child).child("profile").setValue(profile).addOnCompleteListener(new OnCompleteListener<Void>() {
+    // === Function to upload image in the firebase cloud storage
+    private void saveProfileInDatabaseStorage(String name, Uri uri){
+
+        // --- Store image in firebase cloud storage
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("user/profile/"+name+"_"+currentChild);
+        storageReference.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                // --- After successful upload get download url and store it in RTDB
+                storeProfileInRTDB(storageReference.getDownloadUrl().toString());
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                progressDialog.dismiss();
+                Toast.makeText(context, "Failed to upload data, Try again!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // === Store the download URL of the profile in the Real time database of the existing user account
+    private void storeProfileInRTDB(String downloadUrl){
+        databaseReference.child(currentChild).child("profile").setValue(downloadUrl).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+
+                // --- After successful storage in the database store the image in local storage
+                LocalUserData localUserData = new LocalUserData(context);
+                localUserData.storeProfile(BitmapHelper.bitmapToString(bitmap));
+                Toast.makeText(context, "Profile updated successfully", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(context, "Something went wrong! Try again!", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 progressDialog.dismiss();
             }
         });
     }
+
 
 }

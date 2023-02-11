@@ -73,6 +73,7 @@ public class SignUpActivity extends AppCompatActivity {
         userData.setEmail(etEmail.getText().toString().trim());
         userData.setName(etName.getText().toString().trim());
         userData.setPassword(etPassword.getText().toString().trim());
+        userData.setProfile("");
 
         // --- Validating for empty string
         if(userData.getName().length() > 0 && userData.getEmail().length() > 0 && userData.getPassword().length() > 0)
