@@ -85,6 +85,8 @@
             android:layout_height="wrap_content"
             android:text="Sign up"
             android:background="@drawable/btn_background"
+            android:backgroundTintMode="add"
+            android:backgroundTint="@color/greenHigh"
             android:padding="10dp"
             android:gravity="center"
             android:textColor="@color/white"

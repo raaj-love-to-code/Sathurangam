@@ -30,6 +30,7 @@ import com.anonymouscreations.sathurangam.R;
 import com.anonymouscreations.sathurangam.Tools.BitmapHelper;
 import com.anonymouscreations.sathurangam.database.MyDatabase;
 import com.anonymouscreations.sathurangam.popup.ProfilePopup;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -106,10 +107,10 @@ public class HomeActivity extends AppCompatActivity {
                         // --- Validating the intent data
                         if(data != null && data.getData() != null){
                             Uri uri = data.getData();
-                            Bitmap bitmap;
+                            Bitmap bitmap = null;
 
-                            // --- Validating the file size MAX 5MB
-                            int MAX_PHOTO_SIZE = 5;
+                            // --- Validating the file size MAX 2MB
+                            int MAX_PHOTO_SIZE = 2;
                             try {
                                 AssetFileDescriptor assetFileDescriptor = getApplicationContext().getContentResolver().openAssetFileDescriptor(uri,"r");
                                 if(assetFileDescriptor.getLength()/1024 > MAX_PHOTO_SIZE*1024) {
@@ -139,7 +140,7 @@ public class HomeActivity extends AppCompatActivity {
     // === Function to set profile and notification details
     void setDetails(){
         LocalUserData localUserData = new LocalUserData(getApplicationContext());
-        if(!localUserData.getProfile().equals(""))
-            ivProfile.setImageBitmap(BitmapHelper.stringToBitmap(localUserData.getProfile()));
+        if(!localUserData.getUserData().getProfile().equals(""))
+            Picasso.get().load(localUserData.getUserData().getProfile()).into(ivProfile);
     }
 }

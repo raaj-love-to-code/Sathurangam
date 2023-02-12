@@ -25,17 +25,7 @@ public class LocalUserData {
         return new Gson().fromJson(sharedPreferences.getString("userData",""),UserData.class);
     }
 
-    public void storeProfile(String img){
-        edit.putString("profile",img);
-        edit.commit();
-    }
-
-    public String getProfile(){
-        return sharedPreferences.getString("profile","");
-    }
-
     public void clearAll(){
-        edit.putString("profile","");
         edit.putString("userData","");
         edit.commit();
     }

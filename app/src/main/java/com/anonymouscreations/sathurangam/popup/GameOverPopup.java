@@ -1,5 +1,6 @@
 package com.anonymouscreations.sathurangam.popup;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.view.Gravity;
@@ -11,6 +12,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.anonymouscreations.sathurangam.R;
+import com.anonymouscreations.sathurangam.activities.HomeActivity;
 import com.anonymouscreations.sathurangam.activities.MainActivity;
 import com.anonymouscreations.sathurangam.chess.Fdn;
 
@@ -19,10 +21,12 @@ public class GameOverPopup {
     TextView tvGameStatus, tvTotalMoves, tvDuration, btnRestart, btnHome;
     ImageView btnClose;
     View view;
+    Activity activity;
     int duration, halfMove;
 
-    public GameOverPopup(View view){
+    public GameOverPopup(View view, Activity activity){
         this.view = view;
+        this.activity = activity;
         duration = MainActivity.duration;
         halfMove = MainActivity.halfMove;
     }
@@ -73,6 +77,18 @@ public class GameOverPopup {
             @Override
             public void onClick(View view) {
                 view.getContext().startActivity(new Intent(view.getContext(),MainActivity.class));
+                popupWindow.dismiss();
+                activity.finish();
+            }
+        });
+
+        // --- Home button
+        btnHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                view.getContext().startActivity(new Intent(activity, HomeActivity.class));
+                popupWindow.dismiss();
+                activity.finish();
             }
         });
 

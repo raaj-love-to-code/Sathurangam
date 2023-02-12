@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
 
                         // --- Validating for game over
                         if(curPos == -2) {
-                            new GameOverPopup(view).gameOver(fdn);
+                            new GameOverPopup(view, MainActivity.this).gameOver(fdn);
                             gameOver = true;
                             curPos = -1;
                         }
